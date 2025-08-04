@@ -18,7 +18,6 @@ function App() {
 
   function handleFormChange(name, value) {
     const error = getError(name, value);
-    console.log(data);
     if (error) {
       setData({
         ...data,
@@ -27,6 +26,17 @@ function App() {
     } else {
       setData({ ...data, [name]: { error: "", value } });
     }
+  }
+
+  function handleError(name, value) {
+    const error = getError(name, value);
+    if (error) {
+      setData((prev) => ({
+        ...prev,
+        [name]: { value, error },
+      }));
+    }
+    return error;
   }
 
   /**
@@ -67,12 +77,16 @@ function App() {
     // check each field if it's valid or not
     // if not pass in an error message to the field
     // if all fields is set corretly display success message and clear all the fields
-
+    const isError = false;
     event.preventDefault();
     Object.keys(data).forEach((name) => {
-      handleFormChange(name, data[name].value);
+      const error = handleError(name, data[name].value);
+      if (error) isError = true;
     });
-    handleSuccess();
+
+    if (!isError) {
+      handleSuccess();
+    }
   }
 
   function handleSuccess() {
@@ -104,17 +118,17 @@ function App() {
       <main className="bg-white rounded-xl my-5 p-5 w-9/10 max-w-lg md:max-w-xl">
         <form>
           <h1 className="text-3xl font-bold text-grey-900 mb-2">Contact Us</h1>
-          <div className="md:flex md:gap-2">
-            <legend className="grow">
+          <div className="md:flex md:gap-3">
+            <div className="grow">
               <Label name={"fname"}>First Name</Label>
               <Input
                 name="fname"
                 onChange={handleFormChange}
                 error={data.fname.error}
               />
-            </legend>
+            </div>
 
-            <legend className="grow">
+            <div className="grow">
               <Label name={"lname"}>Last Name</Label>
               <Input
                 className="grow"
@@ -122,7 +136,7 @@ function App() {
                 onChange={handleFormChange}
                 error={data.lname.error}
               />
-            </legend>
+            </div>
           </div>
 
           <Label name={"email"}>Email Address</Label>
@@ -134,12 +148,14 @@ function App() {
           />
 
           <Label>Query Type</Label>
-          <Radio name="qType" value={"general"} onChange={handleFormChange}>
-            General Enquiry
-          </Radio>
-          <Radio name="qType" value={"support"} onChange={handleFormChange}>
-            Support Request
-          </Radio>
+          <div className="md:flex md:gap-3">
+            <Radio name="qType" value={"general"} onChange={handleFormChange}>
+              General Enquiry
+            </Radio>
+            <Radio name="qType" value={"support"} onChange={handleFormChange}>
+              Support Request
+            </Radio>
+          </div>
           <Error message={data.qType.error} />
 
           <Label name="message">Message</Label>
@@ -147,7 +163,7 @@ function App() {
             name="message"
             id="message"
             onChange={(e) => handleFormChange("message", e.target.value)}
-            className="border border-grey-500 rounded-sm block my-2 w-full h-40  focus:outline-none focus:border-green-600 resize-none"
+            className="border border-grey-500 rounded-sm block my-2 w-full h-40 md:h-20  focus:outline-none focus:border-green-600 resize-none"
           />
           <Error message={data.message.error} />
 
@@ -157,7 +173,7 @@ function App() {
               name="consent"
               id="consent"
               className="hover:cursor-pointer accent-green-600 "
-              onClick={() => handleFormChange("consent", !data.consent)}
+              onClick={() => handleFormChange("consent", !data.consent.value)}
             />
             <label
               htmlFor="consent"
