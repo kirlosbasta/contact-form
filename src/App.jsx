@@ -77,7 +77,7 @@ function App() {
     // check each field if it's valid or not
     // if not pass in an error message to the field
     // if all fields is set corretly display success message and clear all the fields
-    const isError = false;
+    let isError = false;
     event.preventDefault();
     Object.keys(data).forEach((name) => {
       const error = handleError(name, data[name].value);
@@ -114,7 +114,7 @@ function App() {
   }
   return (
     <div className="font-karla bg-green-200 text-grey-900 text-base min-h-screen flex justify-center items-center relative">
-      {success && <Success />}
+      <Success isSuccess={success} />
       <main className="bg-white rounded-xl my-5 p-5 w-9/10 max-w-lg md:max-w-xl">
         <form>
           <h1 className="text-3xl font-bold text-grey-900 mb-2">Contact Us</h1>
@@ -163,7 +163,9 @@ function App() {
             name="message"
             id="message"
             onChange={(e) => handleFormChange("message", e.target.value)}
-            className="border border-grey-500 rounded-sm block my-2 w-full h-40 md:h-20  focus:outline-none focus:border-green-600 resize-none"
+            className={`border border-grey-500 rounded-sm block my-2 w-full h-40 md:h-20  focus:outline-none focus:border-green-600 resize-none ${
+              data.message.error && "border-red focus:border-red"
+            }`}
           />
           <Error message={data.message.error} />
 
