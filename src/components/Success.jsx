@@ -4,7 +4,7 @@ import success from "../assets/images/icon-success-check.svg";
 function Success({ isSuccess }) {
   return (
     <div
-      className={`absolute -top-50 p-5 rounded-xl bg-grey-900 text-white transtion duration-200 ${
+      className={`absolute -top-50 p-5 rounded-xl bg-grey-900 text-white transtion duration-300 ${
         isSuccess && "top-5"
       }`}
     >

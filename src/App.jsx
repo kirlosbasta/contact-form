@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Input from "./components/Input";
 import Label from "./components/Label";
 import Radio from "./components/Radio";
@@ -92,26 +92,29 @@ function App() {
   function handleSuccess() {
     // check each field error message if it's empty skip if not mark the status to false
     // it the status is false skip if not setSuccess to true
-    let status = true;
-    Object.keys(data).forEach((name) => {
-      const error = data[name].error;
 
-      if (error !== "") {
-        status = false;
-      }
+    setSuccess(true);
+    setData({
+      fname: { value: "", error: "" },
+      lname: { value: "", error: "" },
+      email: { value: "", error: "" },
+      qType: { value: "", error: "" },
+      message: { value: "", error: "" },
+      consent: { value: false, error: "" },
     });
-    if (status) {
-      setSuccess(true);
-      setData({
-        fname: { value: "", error: "" },
-        lname: { value: "", error: "" },
-        email: { value: "", error: "" },
-        qType: { value: "", error: "" },
-        message: { value: "", error: "" },
-        consent: { value: false, error: "" },
-      });
-    }
   }
+
+  useEffect(() => {
+    let id;
+    if (success) {
+      id = setTimeout(() => {
+        setSuccess(false);
+      }, 5000);
+      console.log(id);
+    }
+    return () => clearTimeout(id);
+  }, [success]);
+
   return (
     <div className="font-karla bg-green-200 text-grey-900 text-base min-h-screen flex justify-center items-center relative">
       <Success isSuccess={success} />
@@ -123,6 +126,7 @@ function App() {
               <Label name={"fname"}>First Name</Label>
               <Input
                 name="fname"
+                value={data.fname.value}
                 onChange={handleFormChange}
                 error={data.fname.error}
               />
@@ -133,6 +137,7 @@ function App() {
               <Input
                 className="grow"
                 name="lname"
+                value={data.lname.value}
                 onChange={handleFormChange}
                 error={data.lname.error}
               />
@@ -143,16 +148,27 @@ function App() {
           <Input
             name="email"
             type="email"
+            value={data.email.value}
             onChange={handleFormChange}
             error={data.email.error}
           />
 
           <Label>Query Type</Label>
           <div className="md:flex md:gap-3">
-            <Radio name="qType" value={"general"} onChange={handleFormChange}>
+            <Radio
+              name="qType"
+              value={"general"}
+              checked={data.qType.value === "general"}
+              onChange={handleFormChange}
+            >
               General Enquiry
             </Radio>
-            <Radio name="qType" value={"support"} onChange={handleFormChange}>
+            <Radio
+              name="qType"
+              value={"support"}
+              checked={data.qType.value === "support"}
+              onChange={handleFormChange}
+            >
               Support Request
             </Radio>
           </div>
@@ -162,8 +178,9 @@ function App() {
           <textarea
             name="message"
             id="message"
+            value={data.message.value}
             onChange={(e) => handleFormChange("message", e.target.value)}
-            className={`border border-grey-500 rounded-sm block my-2 w-full h-40 md:h-20  focus:outline-none focus:border-green-600 resize-none ${
+            className={`border border-grey-500 rounded-sm block my-2 w-full h-40 md:h-20  focus:outline-none focus:border-green-600 hover:border-green-600 resize-none ${
               data.message.error && "border-red focus:border-red"
             }`}
           />
@@ -174,6 +191,7 @@ function App() {
               type="checkbox"
               name="consent"
               id="consent"
+              checked={data.consent.value}
               className="hover:cursor-pointer accent-green-600 "
               onClick={() => handleFormChange("consent", !data.consent.value)}
             />
